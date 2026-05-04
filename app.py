@@ -7,10 +7,14 @@ import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
 import os
+from styles import CSS
+from components import (hero_section, stat_card, feature_card, step_card,
+                        placeholder_panel, result_card, footer,
+                        sidebar_brand, sidebar_status)
 
 warnings.filterwarnings("ignore")
 
-# Page Config 
+ 
 st.set_page_config(
     page_title="Financial Risk & Forecasting System",
     page_icon="💹",
@@ -18,369 +22,12 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom CSS 
-st.markdown("""
-<style>
-/* 🔥 Make column stack properly */
-[data-testid="column"] > div {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
 
-/* 🔥 Push button to bottom and align */
-div.stButton {
-    margin-top: auto !important;
-    padding-top: 12px;
-}
+st.markdown(CSS, unsafe_allow_html=True)
 
-/* 🔥 Ensure consistent spacing */
-.home-card {
-    margin-bottom: 0;
-    flex-grow: 1;
-}
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-    html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
-    /* ── Animated background ── */
-    .stApp {
-        background: #050b18;
-        background-image:
-            radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56,100,220,0.12) 0%, transparent 70%),
-            radial-gradient(ellipse 60% 40% at 80% 100%, rgba(139,92,246,0.08) 0%, transparent 60%);
-        color: #e2e8f0;
-    }
 
-    /* ── Sidebar — frosted glass ── */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(195deg, #080e1e 0%, #0d1527 40%, #111c35 100%) !important;
-        border-right: 1px solid rgba(99,130,190,0.12);
-        box-shadow: 4px 0 24px rgba(0,0,0,0.3);
-    }
-    [data-testid="stSidebar"] * { color: #c8d6e5 !important; }
-    [data-testid="stSidebar"] [data-testid="stRadio"] label {
-        border-radius: 10px; padding: 6px 12px; margin: 2px 0;
-        transition: all 0.25s ease;
-    }
-    [data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
-        background: rgba(59,130,246,0.1);
-    }
-
-    /* ── Glassmorphism cards ── */
-    .metric-card {
-        background: rgba(15,25,50,0.6);
-        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(99,130,190,0.15);
-        border-radius: 16px;
-        padding: 22px 26px;
-        margin: 8px 0;
-        transition: all 0.35s cubic-bezier(.25,.8,.25,1);
-        position: relative;
-        overflow: hidden;
-    }
-    .metric-card::before {
-        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-    }
-    .metric-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 40px rgba(0,0,0,0.35), 0 0 20px rgba(59,130,246,0.06);
-        border-color: rgba(99,130,190,0.25);
-    }
-
-    /* ── Result badges ── */
-    .result-approved {
-        background: linear-gradient(135deg, rgba(6,78,59,0.7), rgba(4,120,87,0.5));
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(16,185,129,0.4);
-        border-radius: 16px;
-        padding: 24px;
-        text-align: center;
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: #d1fae5 !important;
-        margin: 16px 0;
-        box-shadow: 0 0 30px rgba(16,185,129,0.1);
-    }
-    .result-rejected {
-        background: linear-gradient(135deg, rgba(127,29,29,0.7), rgba(153,27,27,0.5));
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(239,68,68,0.4);
-        border-radius: 16px;
-        padding: 24px;
-        text-align: center;
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: #fee2e2 !important;
-        margin: 16px 0;
-        box-shadow: 0 0 30px rgba(239,68,68,0.1);
-    }
-    .result-neutral {
-        background: linear-gradient(135deg, rgba(30,58,95,0.7), rgba(30,64,175,0.4));
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(59,130,246,0.35);
-        border-radius: 16px;
-        padding: 24px;
-        text-align: center;
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: #dbeafe !important;
-        margin: 16px 0;
-        box-shadow: 0 0 30px rgba(59,130,246,0.08);
-    }
-
-    /* ── Section headers ── */
-    .section-header {
-        background: linear-gradient(90deg, rgba(15,23,50,0.7), transparent);
-        border-left: 3px solid;
-        border-image: linear-gradient(180deg, #3b82f6, #8b5cf6) 1;
-        padding: 11px 18px;
-        border-radius: 0 10px 10px 0;
-        margin: 24px 0 16px 0;
-        font-size: 1.05rem;
-        font-weight: 600;
-        color: #93c5fd;
-        letter-spacing: 0.2px;
-    }
-
-    /* ── Input labels ── */
-    label { color: #8899b5 !important; font-size: 0.85rem !important; font-weight: 500 !important; }
-
-    /* ── Buttons — gradient glow ── */
-    .stButton > button {
-        background: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);
-        background-size: 200% 200%;
-        animation: btnGlow 4s ease infinite;
-        color: white !important;
-        border: none;
-        border-radius: 12px;
-        padding: 13px 32px;
-        font-size: 0.95rem;
-        font-weight: 600;
-        width: 100%;
-        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-        letter-spacing: 0.5px;
-        box-shadow: 0 4px 15px rgba(99,102,241,0.25);
-    }
-    @keyframes btnGlow {
-        0%, 100% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-    }
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(99,102,241,0.4), 0 0 40px rgba(59,130,246,0.15);
-    }
-    .stButton > button:active { transform: translateY(0); }
-
-    /* ── Inputs dark ── */
-    .stSlider > div > div > div { background: linear-gradient(90deg, #3b82f6, #8b5cf6) !important; }
-    [data-testid="stNumberInput"] input,
-    [data-testid="stTextInput"] input,
-    .stSelectbox select,
-    [data-testid="stTextArea"] textarea {
-        background-color: rgba(15,23,42,0.8) !important;
-        color: #e2e8f0 !important;
-        border: 1px solid rgba(99,130,190,0.2) !important;
-        border-radius: 10px !important;
-        transition: border-color 0.3s, box-shadow 0.3s;
-    }
-    [data-testid="stNumberInput"] input:focus,
-    [data-testid="stTextInput"] input:focus {
-        border-color: rgba(59,130,246,0.5) !important;
-        box-shadow: 0 0 12px rgba(59,130,246,0.1) !important;
-    }
-
-    /* ── Dividers ── */
-    hr { border-color: rgba(99,130,190,0.12) !important; }
-
-    /* ── Info boxes ── */
-    .info-box {
-        background: rgba(59,130,246,0.06);
-        border: 1px solid rgba(59,130,246,0.18);
-        border-radius: 12px;
-        padding: 14px 18px;
-        font-size: 0.87rem;
-        color: #7cb3f4;
-        margin: 10px 0;
-        backdrop-filter: blur(8px);
-    }
-
-    /* ── Page title ── */
-    .page-title {
-        font-size: 2.2rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #c084fc 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 2px;
-        letter-spacing: -0.5px;
-    }
-    .page-subtitle {
-        color: #566a88;
-        font-size: 0.92rem;
-        margin-bottom: 28px;
-        font-weight: 400;
-        letter-spacing: 0.3px;
-    }
-
-    /* ── Home cards — glassmorphism ── */
-    .home-card {
-        background: rgba(12,20,42,0.65);
-        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(99,130,190,0.12);
-        border-radius: 20px;
-        padding: 30px 24px;
-        text-align: center;
-        min-height: 230px;
-        transition: all 0.4s cubic-bezier(.25,.8,.25,1);
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-    }
-    .home-card::before {
-        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
-    }
-    .home-card::after {
-        content: ''; position: absolute; bottom: -50%; left: -20%; width: 140%; height: 100%;
-        background: radial-gradient(ellipse, rgba(59,130,246,0.04) 0%, transparent 70%);
-        transition: opacity 0.4s;
-        opacity: 0;
-    }
-    .home-card:hover {
-        border-color: rgba(99,130,246,0.35);
-        box-shadow: 0 16px 48px rgba(0,0,0,0.3), 0 0 40px rgba(59,130,246,0.08);
-        transform: translateY(-6px);
-    }
-    .home-card:hover::after { opacity: 1; }
-    .home-card-icon {
-        font-size: 2.6rem; margin-bottom: 14px;
-        filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
-    }
-    .home-card-title {
-        font-size: 1.05rem; font-weight: 700; color: #e2e8f0;
-        margin-bottom: 10px; letter-spacing: 0.2px;
-    }
-    .home-card-desc {
-        font-size: 0.82rem; color: #5e7394; line-height: 1.5;
-    }
-
-    /* ── Step cards ── */
-    .step-card {
-        text-align: center; padding: 24px 16px;
-        background: rgba(12,20,42,0.5);
-        backdrop-filter: blur(12px);
-        border-radius: 16px;
-        border: 1px solid rgba(99,130,190,0.1);
-        transition: all 0.3s ease;
-    }
-    .step-card:hover {
-        border-color: rgba(99,130,190,0.25);
-        transform: translateY(-3px);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-    }
-
-    /* ── Placeholder panels ── */
-    .placeholder-panel {
-        display: flex; align-items: center; justify-content: center;
-        height: 320px;
-        background: rgba(12,20,42,0.4);
-        backdrop-filter: blur(12px);
-        border-radius: 16px;
-        border: 1px dashed rgba(99,130,190,0.15);
-        transition: all 0.3s;
-    }
-    .placeholder-panel:hover { border-color: rgba(99,130,190,0.3); }
-
-    /* ── Pulse dot animation ── */
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-    .pulse-dot { animation: pulse 2s ease-in-out infinite; }
-
-    /* ── Streamlit metric styling ── */
-    [data-testid="stMetric"] {
-        background: rgba(12,20,42,0.5);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(99,130,190,0.1);
-        border-radius: 12px;
-        padding: 14px 18px;
-    }
-    [data-testid="stMetricLabel"] { color: #6b82a6 !important; font-size: 0.82rem !important; }
-    [data-testid="stMetricValue"] { color: #e2e8f0 !important; font-weight: 700 !important; }
-
-    /* ── Tabs ── */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        background: rgba(12,20,42,0.4);
-        border-radius: 12px;
-        padding: 4px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        border-radius: 10px;
-        padding: 8px 20px;
-        color: #6b82a6 !important;
-        font-weight: 500;
-    }
-    .stTabs [aria-selected="true"] {
-        background: rgba(59,130,246,0.15) !important;
-        color: #93c5fd !important;
-    }
-
-    /* ── Dataframe ── */
-    [data-testid="stDataFrame"] {
-        border-radius: 12px;
-        overflow: hidden;
-        border: 1px solid rgba(99,130,190,0.1);
-    }
-
-    /* ── Footer ── */
-    .app-footer {
-        text-align: center; padding: 30px 0 10px; margin-top: 40px;
-        border-top: 1px solid rgba(99,130,190,0.08);
-        color: #3d4f6b; font-size: 0.75rem;
-    }
-
-    /* ── Sidebar brand ── */
-    .sidebar-brand {
-        text-align: center; padding: 28px 16px 16px;
-    }
-    .sidebar-brand-icon {
-        width: 52px; height: 52px; margin: 0 auto 12px;
-        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-        border-radius: 14px; display: flex; align-items: center;
-        justify-content: center; font-size: 1.6rem;
-        box-shadow: 0 4px 20px rgba(99,102,241,0.3);
-    }
-    .sidebar-brand-name {
-        font-size: 1.1rem; font-weight: 800; letter-spacing: 1.5px;
-        background: linear-gradient(135deg, #60a5fa, #a78bfa);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .sidebar-brand-sub {
-        font-size: 0.7rem; color: #3d5074 !important; margin-top: 4px;
-        letter-spacing: 2px; text-transform: uppercase;
-    }
-
-    /* ── Model status cards ── */
-    .model-status {
-        padding: 14px 16px; margin-top: 8px;
-        background: rgba(59,130,246,0.04);
-        border: 1px solid rgba(99,130,190,0.08);
-        border-radius: 12px; font-size: 0.76rem;
-    }
-    .model-status-row {
-        display: flex; align-items: center; gap: 8px;
-        padding: 5px 0; color: #4a6080 !important;
-    }
-    .model-status-dot {
-        width: 6px; height: 6px; border-radius: 50%;
-        background: #10b981; display: inline-block;
-        box-shadow: 0 0 6px rgba(16,185,129,0.4);
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# Load Models 
 BASE = os.path.dirname(__file__)
 
 @st.cache_resource
@@ -398,24 +45,14 @@ def load_models():
 
 models = load_models()
 
-#  Navigation Helper
 NAV_OPTIONS = ["🏠 Dashboard", "📈 Stock Predictor", "🏦 Loan Approval", "🔍 Fraud Detection", "👥 Customer Segments"]
 
-# Apply any pending navigation BEFORE the radio widget renders
 if "_nav_target" in st.session_state:
     st.session_state["nav"] = st.session_state["_nav_target"]
     del st.session_state["_nav_target"]
 
-# Sidebar Navigation
 with st.sidebar:
-    st.markdown("""
-    <div class="sidebar-brand">
-        <div class="sidebar-brand-icon">💹</div>
-        <div class="sidebar-brand-name">FINRISK</div>
-        <div class="sidebar-brand-sub">Intelligence Suite</div>
-    </div>
-    <hr/>
-    """, unsafe_allow_html=True)
+    st.markdown(sidebar_brand(), unsafe_allow_html=True)
 
     page = st.radio(
         "Navigation",
@@ -425,67 +62,39 @@ with st.sidebar:
     )
 
     st.markdown("<hr/>", unsafe_allow_html=True)
-    st.markdown("""
-    <div class="model-status">
-        <div style="font-weight:600; color:#566a88 !important; margin-bottom:8px; font-size:0.72rem; text-transform:uppercase; letter-spacing:1px;">System Status</div>
-        <div class="model-status-row"><span class="model-status-dot pulse-dot"></span> Stock Price — Linear Regression</div>
-        <div class="model-status-row"><span class="model-status-dot pulse-dot"></span> Loan Approval — Logistic Regression</div>
-        <div class="model-status-row"><span class="model-status-dot pulse-dot"></span> Fraud Detection — Random Forest</div>
-        <div class="model-status-row"><span class="model-status-dot pulse-dot"></span> Segmentation — K-Means</div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(sidebar_status(), unsafe_allow_html=True)
 
  
-#   DASHBOARD
 
 if page == "🏠 Dashboard":
-    st.markdown('<div class="page-title">Financial Risk & Forecasting System</div>', unsafe_allow_html=True)
-    st.markdown('<div class="page-subtitle"> Real-time predictions </div>', unsafe_allow_html=True)
 
+    st.markdown(hero_section(), unsafe_allow_html=True)
+
+    
     c1, c2, c3, c4 = st.columns(4)
     stats = [
-        (c1, "📈", "Stock Prediction", "Linear Regression", "#3b82f6", "Real-time"),
-        (c2, "🏦", "Loan Approval",    "Logistic Regression", "#10b981", "Instant"),
-        (c3, "🔍", "Fraud Detection",  "Random Forest",       "#f59e0b", "99.9% Acc"),
-        (c4, "👥", "Segmentation",     "K-Means Clustering",  "#8b5cf6", "4 Clusters"),
+        (c1, "📈", "Stock Prediction", "Linear Regression", "#3b82f6", "Real-time", "delay-1"),
+        (c2, "🏦", "Loan Approval",    "Logistic Regression", "#10b981", "Instant", "delay-2"),
+        (c3, "🔍", "Fraud Detection",  "Random Forest",       "#f59e0b", "99.9% Acc", "delay-3"),
+        (c4, "👥", "Segmentation",     "K-Means Clustering",  "#8b5cf6", "4 Clusters", "delay-4"),
     ]
-    for col, icon, title, model_type, color, badge in stats:
+    for col, icon, title, model_type, color, badge, delay in stats:
         with col:
-            st.markdown(f"""
-            <div class="metric-card" style="border-top: 3px solid {color};">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                    <div style="font-size:1.8rem; filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3));">{icon}</div>
-                    <div style="font-size:0.65rem; padding:3px 10px; background:rgba({int(color[1:3],16)},{int(color[3:5],16)},{int(color[5:7],16)},0.12);
-                         border-radius:20px; color:{color}; font-weight:600; letter-spacing:0.5px;">{badge}</div>
-                </div>
-                <div style="font-size:0.95rem; font-weight:700; color:#e2e8f0; margin-bottom:4px;">{title}</div>
-                <div style="font-size:0.75rem; color:#4a6080;">{model_type}</div>
-                <div style="font-size:0.7rem; color:{color}; margin-top:10px; display:flex; align-items:center; gap:6px;">
-                    <span class="pulse-dot" style="width:6px; height:6px; border-radius:50%; background:{color};
-                          display:inline-block; box-shadow:0 0 6px {color}40;"></span> Active
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(stat_card(icon, title, model_type, color, badge, delay), unsafe_allow_html=True)
 
     st.markdown("<br/>", unsafe_allow_html=True)
 
-    # Feature cards
+  
     cols = st.columns(4)
     features = [
-        ("📈", "Stock Price Predictor", "Predict tomorrow's stock price using today's value. Real-time forecasting for informed trading decisions.", "Use → Stock Predictor", "📈 Stock Predictor"),
-        ("🏦", "Loan Approval System",  "Predict loan approval based on income, CIBIL score, loan amount, and employment status.",                  "Use → Loan Approval",  "🏦 Loan Approval"),
-        ("🔍", "Fraud Detection",       "Detect fraudulent credit card transactions using 30 PCA-transformed features with high accuracy.",          "Use → Fraud Detection", "🔍 Fraud Detection"),
-        ("👥", "Customer Segments",     "Segment customers by spending score into clusters for targeted marketing and personalization.",              "Use → Customer Segments", "👥 Customer Segments"),
+        ("📈", "Stock Price Predictor", "Predict tomorrow's stock price using today's value. Real-time forecasting for informed trading decisions.", "Use → Stock Predictor", "📈 Stock Predictor", "delay-1"),
+        ("🏦", "Loan Approval System",  "Predict loan approval based on income, CIBIL score, loan amount, and employment status.",                  "Use → Loan Approval",  "🏦 Loan Approval", "delay-2"),
+        ("🔍", "Fraud Detection",       "Detect fraudulent credit card transactions using 30 PCA-transformed features with high accuracy.",          "Use → Fraud Detection", "🔍 Fraud Detection", "delay-3"),
+        ("👥", "Customer Segments",     "Segment customers by spending score into clusters for targeted marketing and personalization.",              "Use → Customer Segments", "👥 Customer Segments", "delay-4"),
     ]
-    for col, (icon, title, desc, cta, target_page) in zip(cols, features):
+    for col, (icon, title, desc, cta, target_page, delay) in zip(cols, features):
         with col:
-            st.markdown(f"""
-            <div class="home-card">
-                <div class="home-card-icon">{icon}</div>
-                <div class="home-card-title">{title}</div>
-                <div class="home-card-desc">{desc}</div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(feature_card(icon, title, desc, delay), unsafe_allow_html=True)
             if st.button(cta, key=f"nav_{target_page}"):
                 st.session_state["_nav_target"] = target_page
                 st.rerun()
@@ -493,26 +102,19 @@ if page == "🏠 Dashboard":
     st.markdown("<br/>", unsafe_allow_html=True)
     st.markdown('<div class="section-header">📊 How to Use This System</div>', unsafe_allow_html=True)
     steps = [
-        ("1", "Navigate", "Select a module from the left sidebar", "#3b82f6"),
-        ("2", "Input Data", "Fill in the required financial parameters", "#10b981"),
-        ("3", "Predict", "Click the Predict button to run the model", "#f59e0b"),
-        ("4", "Analyze", "Review the result and visual insights", "#8b5cf6"),
+        ("1", "Navigate", "Select a module from the left sidebar", "#3b82f6", "delay-1"),
+        ("2", "Input Data", "Fill in the required financial parameters", "#10b981", "delay-2"),
+        ("3", "Predict", "Click the Predict button to run the model", "#f59e0b", "delay-3"),
+        ("4", "Analyze", "Review the result and visual insights", "#8b5cf6", "delay-4"),
     ]
     s1, s2, s3, s4 = st.columns(4)
-    for col, (num, title, desc, color) in zip([s1, s2, s3, s4], steps):
+    for col, (num, title, desc, color, delay) in zip([s1, s2, s3, s4], steps):
         with col:
-            st.markdown(f"""
-            <div class="step-card">
-                <div style="width:36px; height:36px; margin:0 auto 12px; background:linear-gradient(135deg, {color}, {color}88);
-                     border-radius:10px; display:flex; align-items:center; justify-content:center;
-                     font-size:0.9rem; font-weight:800; color:white;
-                     box-shadow:0 4px 12px {color}30;">{num}</div>
-                <div style="font-size:0.9rem; font-weight:700; color:#e2e8f0; margin-bottom:6px;">{title}</div>
-                <div style="font-size:0.78rem; color:#4a6080; line-height:1.4;">{desc}</div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(step_card(num, title, desc, color, delay), unsafe_allow_html=True)
 
-# STOCK PRICE PREDICTION
+     
+    st.markdown(footer(), unsafe_allow_html=True)
+
 
 elif page == "📈 Stock Predictor":
     st.markdown('<div class="page-title">📈 Stock Price Predictor</div>', unsafe_allow_html=True)
@@ -557,7 +159,7 @@ elif page == "📈 Stock Predictor":
                 </div>
                 """, unsafe_allow_html=True)
 
-                # Forecast simulation chart
+                
                 prices = [current_price]
                 for _ in range(forecast_days):
                     next_p = model_s.predict(np.array([[prices[-1]]]))[0]
@@ -597,15 +199,10 @@ elif page == "📈 Stock Predictor":
             else:
                 st.error("Stock model not loaded.")
         else:
-            st.markdown("""
-            <div style="display:flex; align-items:center; justify-content:center; height:300px;
-                 background:#1e293b; border-radius:12px; border:1px dashed #334155;">
-                <div style="text-align:center; color:#475569;">
-                    <div style="font-size:2.5rem;">📈</div>
-                    <div style="margin-top:12px; font-size:0.9rem;">Enter stock price and click Predict</div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(placeholder_panel("📈", "Enter stock price and click Predict"), unsafe_allow_html=True)
+
+    
+    st.markdown(footer(), unsafe_allow_html=True)
 
 
 #  LOAN APPROVAL
@@ -734,15 +331,10 @@ elif page == "🏦 Loan Approval":
             else:
                 st.error("Loan models not loaded.")
         else:
-            st.markdown("""
-            <div style="display:flex; align-items:center; justify-content:center; height:350px;
-                 background:#1e293b; border-radius:12px; border:1px dashed #334155;">
-                <div style="text-align:center; color:#475569;">
-                    <div style="font-size:2.5rem;">🏦</div>
-                    <div style="margin-top:12px; font-size:0.9rem;">Fill in your details and check eligibility</div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(placeholder_panel("🏦", "Fill in your details and check eligibility"), unsafe_allow_html=True)
+
+    # Footer
+    st.markdown(footer(), unsafe_allow_html=True)
 
 
 # CREDIT CARD FRAUD DETECTION
@@ -883,15 +475,7 @@ elif page == "🔍 Fraud Detection":
                 else:
                     st.error("Fraud model not loaded.")
             else:
-                st.markdown("""
-                <div style="display:flex; align-items:center; justify-content:center; height:350px;
-                     background:#1e293b; border-radius:12px; border:1px dashed #334155;">
-                    <div style="text-align:center; color:#475569;">
-                        <div style="font-size:2.5rem;">🔍</div>
-                        <div style="margin-top:12px; font-size:0.9rem;">Select a preset or enter transaction features</div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown(placeholder_panel("🔍", "Select a preset or enter transaction features"), unsafe_allow_html=True)
 
     #  Tab 2: Batch CSV Upload 
     with tab2:
@@ -940,6 +524,8 @@ elif page == "🔍 Fraud Detection":
                     else:
                         st.error(f"Expected 30 feature columns. Found: {len(available)}")
 
+    # Footer
+    st.markdown(footer(), unsafe_allow_html=True)
 
 #  CUSTOMER SEGMENTATION
 
@@ -1084,15 +670,7 @@ elif page == "👥 Customer Segments":
             else:
                 st.error("KMeans model not loaded.")
         else:
-            st.markdown("""
-            <div style="display:flex; align-items:center; justify-content:center; height:350px;
-                 background:#1e293b; border-radius:12px; border:1px dashed #334155;">
-                <div style="text-align:center; color:#475569;">
-                    <div style="font-size:2.5rem;">👥</div>
-                    <div style="margin-top:12px; font-size:0.9rem;">Adjust spending score and click Classify</div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(placeholder_panel("👥", "Adjust spending score and click Classify"), unsafe_allow_html=True)
 
             # Always show segment legend
             st.markdown('<div class="section-header">📌 Segment Reference Guide</div>', unsafe_allow_html=True)
@@ -1108,3 +686,6 @@ elif page == "👥 Customer Segments":
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
+
+    # Footer
+    st.markdown(footer(), unsafe_allow_html=True)
