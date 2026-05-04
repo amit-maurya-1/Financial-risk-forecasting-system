@@ -6,7 +6,7 @@ def hero_section():
             All Systems Operational
         </div>
         <div class="hero-title">Financial Risk &<br/>Forecasting Intelligence</div>
-        <div class="hero-subtitle">Enterprise-grade AI predictions for stock markets, loan approvals, fraud detection, and customer segmentation — all in one platform.</div>
+        <div class="hero-subtitle">Enterprise-grade predictions for stock markets, loan approvals, fraud detection, and customer segmentation — all in one platform.</div>
     </div>
     """
 
